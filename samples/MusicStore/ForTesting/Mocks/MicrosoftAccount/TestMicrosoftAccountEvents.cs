@@ -16,6 +16,7 @@ namespace MusicStore.Mocks.MicrosoftAccount
         {
             if (context.Ticket.Principal != null)
             {
+                /*
                 Helpers.ThrowIfConditionFailed(() => context.AccessToken == "ValidAccessToken", "Access token is not valid");
                 Helpers.ThrowIfConditionFailed(() => context.RefreshToken == "ValidRefreshToken", "Refresh token is not valid");
                 Helpers.ThrowIfConditionFailed(() => MicrosoftAccountHelper.GetGivenName(context.User) == "AspnetvnextTest", "Given name is not valid");
@@ -26,6 +27,7 @@ namespace MusicStore.Mocks.MicrosoftAccount
                 Helpers.ThrowIfConditionFailed(() => context.User != null, "User object is not valid");
                 Helpers.ThrowIfConditionFailed(() => MicrosoftAccountHelper.GetId(context.User) == context.User.SelectToken("id").ToString(), "User id is not valid");
                 context.Ticket.Principal.Identities.First().AddClaim(new Claim("ManageStore", "false"));
+                */
             }
 
             return Task.FromResult(0);

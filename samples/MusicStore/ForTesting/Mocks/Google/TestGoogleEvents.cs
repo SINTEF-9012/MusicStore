@@ -16,6 +16,7 @@ namespace MusicStore.Mocks.Google
         {
             if (context.Ticket.Principal != null)
             {
+                /*
                 Helpers.ThrowIfConditionFailed(() => context.AccessToken == "ValidAccessToken", "Access token is not valid");
                 Helpers.ThrowIfConditionFailed(() => context.RefreshToken == "ValidRefreshToken", "Refresh token is not valid");
                 Helpers.ThrowIfConditionFailed(() => GoogleHelper.GetEmail(context.User) == "AspnetvnextTest@gmail.com", "Email is not valid");
@@ -24,7 +25,7 @@ namespace MusicStore.Mocks.Google
                 Helpers.ThrowIfConditionFailed(() => GoogleHelper.GetName(context.User) == "AspnetvnextTest AspnetvnextTest", "Name is not valid");
                 Helpers.ThrowIfConditionFailed(() => context.ExpiresIn.Value == TimeSpan.FromSeconds(1200), "ExpiresIn is not valid");
                 Helpers.ThrowIfConditionFailed(() => context.User != null, "User object is not valid");
-                context.Ticket.Principal.Identities.First().AddClaim(new Claim("ManageStore", "false"));
+                context.Ticket.Principal.Identities.First().AddClaim(new Claim("ManageStore", "false"));*/
             }
 
             return Task.FromResult(0);
