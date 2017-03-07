@@ -17,6 +17,9 @@ namespace MusicStore.Controllers
         public HomeController(IOptions<AppSettings> options)
         {
             _appSettings = options.Value;
+
+            
+
         }
         //
         // GET: /Home/
@@ -46,6 +49,10 @@ namespace MusicStore.Controllers
                     }
                 }
             }
+
+            /*----- A trick to get the user-----*/
+            TenantController.currentUser = this.User.Identity.Name;
+            /*-----------------------------------*/
 
             return View(albums);
         }

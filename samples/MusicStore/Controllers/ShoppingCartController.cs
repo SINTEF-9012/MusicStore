@@ -57,6 +57,7 @@ namespace MusicStore.Controllers
 
             // Go back to the main store page for more shopping
             return RedirectToAction("Index");
+            // return Redirect("https://www.google.com");
         }
 
         //

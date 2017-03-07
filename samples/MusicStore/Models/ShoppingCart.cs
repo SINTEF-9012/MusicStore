@@ -4,6 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using System.Diagnostics;
+using MusicStore.Customiser;
+using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace MusicStore.Models
 {
@@ -115,13 +120,52 @@ namespace MusicStore.Models
                 .SumAsync();
         }
 
-        public Task<decimal> GetTotal()
+        public async Task<decimal> GetTotal()
         {
+            /*========Custom code hook 'before'=========*/
+            var username = Controllers.TenantController.currentUser;
+            
+            System.Diagnostics.Debug.WriteLine(username);
+            var currentFunction = "MusicStore.Models.ShoppingCart.GetTotal";
+            var endpoint = Controllers.TenantController.GetFunctionEndpoint(username, currentFunction);
+            if(endpoint != null)
+            {
+                Manual manual = await RestUtil.instance.Post(endpoint + "/before", new JObject());
+                for (var i = 0; i <= 3; i++) {                    
+                    if (manual == null)
+                        break;
+                    if(manual.returnx != null)
+                    {
+                        string s = manual.returnx;
+                        System.Diagnostics.Debug.WriteLine(s);
+                        return Decimal.Parse(s, new CultureInfo("en-US"));
+                    }
+                    if (manual.callback == null)
+                        break;
+
+                    JObject param = manual.callback.body;
+                    JObject body = new JObject();
+                    foreach (var x in param)
+                    {
+                        var query = x.Value.ToString();
+                        JToken token = null;
+                        if (query == "this.GetCartItems()")
+                        {
+                            var items = await this.GetCartItems();
+                            token = JToken.FromObject(items);
+                        }
+                        body.Add(x.Key, token);
+                    }
+
+                    manual = await RestUtil.instance.Post(endpoint + manual.callback.function, body);
+                }
+            }
+            
             // Multiply album price by count of that album to get 
             // the current price for each of those albums in the cart
             // sum all album price totals to get the cart total
 
-            return _dbContext
+            return await _dbContext
                 .CartItems
                 .Include(c => c.Album)
                 .Where(c => c.CartId == _shoppingCartId)
