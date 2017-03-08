@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MusicStore.Models;
 using MusicStore.ViewModels;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using MusicStore.Customiser;
 
 namespace MusicStore.Controllers
 {
@@ -55,9 +59,59 @@ namespace MusicStore.Controllers
             await DbContext.SaveChangesAsync(requestAborted);
             _logger.LogInformation("Album {albumId} was added to the cart.", addedAlbum.AlbumId);
 
-            // Go back to the main store page for more shopping
+            /*========Custom code hook 'after'=========*/
+            var username = Controllers.TenantController.currentUser;
+
+            System.Diagnostics.Debug.WriteLine(username);
+            var currentFunction = "MusicStore.Controllers.ShoppingCartController.AddToCart";
+            var endpoint = Controllers.TenantController.GetFunctionEndpoint(username, currentFunction);
+            if (endpoint != null)
+            {
+                var context = new Dictionary<string, object>();
+                context.Add("id", id);
+                context.Add("cart", cart);
+                Manual manual = await RestUtil.instance.Post(endpoint + "/after", new JObject());
+                for (var i = 0; i <= 3; i++)
+                {
+                    if (manual == null)
+                        break;
+                    if (manual.context != null)
+                    {
+                        foreach(var x in manual.context)
+                        {
+                            object value = null;
+                            var query = x.Value.ToString();
+                            if (x.Key.StartsWith("str_"))
+                                value = query;
+                            if (query == "(await $cart.GetCartItems()).FirstOrDefault(item => item.AlbumId == id)")
+                                value = (await cart.GetCartItems()).FirstOrDefault(item => item.AlbumId == id);
+                            else if (query == "String.format($str_form, $endpoint, $newitem.CartItemId)")
+                                value = string.Format((string)context["str_form"], endpoint, ((CartItem)context["newitem"]).CartItemId);
+                            else if (query == "$this.Content($form)")
+                                value = this.Content((string)context["form"]);
+                            context.Add(x.Key, value);
+                        }
+                    }
+                    if (manual.instructions != null) {
+                        foreach(var inst in manual.instructions)
+                        {
+                            if (inst == "$content.ContentType = \"text/html\"")
+                                ((ContentResult)context["content"]).ContentType = "text/html";
+                        }
+                    }
+                    if (manual.returnx != null)
+                    {
+                        if (manual.returnx == "$content")
+                            return (ContentResult) context["content"];
+                    }
+                        
+                }
+            }
+            
+            /*=======End of custom code 'after' ==========*/
+
+
             return RedirectToAction("Index");
-            // return Redirect("https://www.google.com");
         }
 
         //

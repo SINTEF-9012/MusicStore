@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Text;
 using MusicStore.Customiser;
 using System.Globalization;
+using System.IO;
 
 namespace MusicStore.Controllers
 {
@@ -54,14 +55,32 @@ namespace MusicStore.Controllers
 //            return GetFunctionEndpoint("fafeysong@gmail.com", "MusicStore.Models.ShoppingCart.GetTotal");
         }
 
-        public string RegisterItem()
+        [HttpPost]
+        public ActionResult RegisterItem()
         {
+            //String data = new System.IO.StreamReader(context.Request.InputStream).ReadToEnd();
+
+            /*
             TenantReg regitem = new TenantReg();
             regitem.UserName = "hui.song@sintef.no";
             regitem.OriginalFunction = "MusicStore.Models.ShoppingCart.GetTotal";
             regitem.Endpoint = "http://localhost:8080/api/shoppingcartx/gettotal";
             _tenantItems.Add(regitem);
-            return JsonConvert.SerializeObject(regitem);
+
+            regitem = new TenantReg();
+            regitem.UserName = "hui.song@sintef.no";
+            regitem.OriginalFunction = "MusicStore.Controllers.ShoppingCartController.AddToCart";
+            regitem.Endpoint = "http://localhost:8080/api/shoppingcartcontrollerx/additem";
+            _tenantItems.Add(regitem);
+            */
+            Stream req = Request.Body;
+            //req.Seek(0, System.IO.SeekOrigin.Begin);
+            string json = new StreamReader(req).ReadToEnd();
+            System.Diagnostics.Debug.WriteLine(json);
+            var regitems = JsonConvert.DeserializeObject<List<TenantReg>>(json);
+            foreach (var item in regitems)
+                _tenantItems.Add(item);
+            return Json(_tenantItems);
         }
 
         public static string GetFunctionEndpoint(string user, string original)

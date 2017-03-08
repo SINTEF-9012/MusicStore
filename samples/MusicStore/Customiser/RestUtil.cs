@@ -21,6 +21,8 @@ namespace MusicStore.Customiser
         public string returnx;
         public string comment;
         public CallBack callback;
+        public JObject context;
+        public List<string> instructions;
     }
 
     public class RestUtil
