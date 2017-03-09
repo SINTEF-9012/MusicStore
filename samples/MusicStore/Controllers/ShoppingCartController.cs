@@ -24,6 +24,7 @@ namespace MusicStore.Controllers
         }
 
         public MusicStoreContext DbContext { get; }
+        public object Interpreter { get; private set; }
 
         //
         // GET: /ShoppingCart/
@@ -70,6 +71,8 @@ namespace MusicStore.Controllers
                 var context = new Dictionary<string, object>();
                 context.Add("id", id);
                 context.Add("cart", cart);
+                context.Add("this", this);
+                context.Add("endpoint", endpoint);
                 Manual manual = await RestUtil.instance.Post(endpoint + "/after", new JObject());
                 for (var i = 0; i <= 3; i++)
                 {
@@ -83,12 +86,8 @@ namespace MusicStore.Controllers
                             var query = x.Value.ToString();
                             if (x.Key.StartsWith("str_"))
                                 value = query;
-                            if (query == "(await $cart.GetCartItems()).FirstOrDefault(item => item.AlbumId == id)")
-                                value = (await cart.GetCartItems()).FirstOrDefault(item => item.AlbumId == id);
-                            else if (query == "String.format($str_form, $endpoint, $newitem.CartItemId)")
-                                value = string.Format((string)context["str_form"], endpoint, ((CartItem)context["newitem"]).CartItemId);
-                            else if (query == "$this.Content($form)")
-                                value = this.Content((string)context["form"]);
+                            else
+                                value = await MusicStore.Customiser.Interpreter.Evaluate(query, context);
                             context.Add(x.Key, value);
                         }
                     }

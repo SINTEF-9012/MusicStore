@@ -12,6 +12,7 @@ using System.Text;
 using MusicStore.Customiser;
 using System.Globalization;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace MusicStore.Controllers
 {
@@ -48,7 +49,11 @@ namespace MusicStore.Controllers
 
         public string ForTestSync()
         {
-            return String.Join("+", "fes sed".Split(' '));
+            //return String.Join("+", "fes sed".Split(' '));
+            var o = JObject.Parse("{'value': 5.99}");
+            var d = o["value"];
+            object dd = d.ToObject<object>();
+            return d.ToString();
             //decimal d = Decimal.Parse("8.99", new CultureInfo("en-US"));
             //decimal d2 = Decimal.Parse("8,99");
 

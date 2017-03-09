@@ -128,6 +128,8 @@ namespace MusicStore.Models
             System.Diagnostics.Debug.WriteLine(username);
             var currentFunction = "MusicStore.Models.ShoppingCart.GetTotal";
             var endpoint = Controllers.TenantController.GetFunctionEndpoint(username, currentFunction);
+            var context = new Dictionary<string, object>();
+            context.Add("this", this);
             if(endpoint != null)
             {
                 Manual manual = await RestUtil.instance.Post(endpoint + "/before", new JObject());
@@ -148,12 +150,8 @@ namespace MusicStore.Models
                     foreach (var x in param)
                     {
                         var query = x.Value.ToString();
-                        JToken token = null;
-                        if (query == "this.GetCartItems()")
-                        {
-                            var items = await this.GetCartItems();
-                            token = JToken.FromObject(items);
-                        }
+                        var items = await MusicStore.Customiser.Interpreter.Evaluate(query, context);
+                        var token = JToken.FromObject(items);
                         body.Add(x.Key, token);
                     }
 

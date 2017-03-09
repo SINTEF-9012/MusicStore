@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using MusicStore.Models;
 
 namespace MusicStore.Customiser
 {
@@ -46,5 +47,36 @@ namespace MusicStore.Customiser
                 return null;
             return JsonConvert.DeserializeObject<Manual>(strResult);
         }
+    }
+
+    public class Interpreter
+    {
+        public static async Task<object> Evaluate(string command, Dictionary<string, object> context)
+        {
+            dynamic o = null;
+            switch (command)
+            {
+                case "this.GetCartItems()":
+                    o = context["this"];
+                    return await o.GetCartItems();
+                case "(await $cart.GetCartItems()).FirstOrDefault(item => item.AlbumId == id)":
+                    o = context["cart"];
+                    return (await ((ShoppingCart)o).GetCartItems()).FirstOrDefault(item => item.AlbumId == (int)context["id"]);
+                case "String.format($str_form, $endpoint, $newitem.CartItemId)":
+                    return string.Format((string)context["str_form"], context["endpoint"], ((CartItem)context["newitem"]).CartItemId);
+                case "$this.Content($form)":
+                    o = context["this"];
+                    return o.Content((string)context["form"]);
+                case "$content.ContentType = \"text/html\"":
+                    o = context["content"];
+                    o.ContentType = "text/html";
+                    return null;
+                case "$album.Title":
+                    o = context["album"];
+                    return o.Title;
+            }
+            return null;
+        }
+
     }
 }

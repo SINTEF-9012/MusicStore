@@ -133,12 +133,7 @@ namespace MusicStore.Controllers
                     foreach (var x in param)
                     {
                         var query = x.Value.ToString();
-                        JToken token = null;
-                        if (query == "$album.Title")
-                        {
-                            token = JToken.FromObject(((Album)context["album"]).Title);
-                        }
-                        body.Add(x.Key, token);
+                        body.Add(x.Key, JToken.FromObject(await MusicStore.Customiser.Interpreter.Evaluate(query, context)));
                     }
 
                     manual = await RestUtil.instance.Post(endpoint + manual.callback.function, body);
