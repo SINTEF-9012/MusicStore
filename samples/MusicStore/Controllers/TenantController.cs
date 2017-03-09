@@ -48,10 +48,11 @@ namespace MusicStore.Controllers
 
         public string ForTestSync()
         {
-            decimal d = Decimal.Parse("8.99", new CultureInfo("en-US"));
-            decimal d2 = Decimal.Parse("8,99");
+            return String.Join("+", "fes sed".Split(' '));
+            //decimal d = Decimal.Parse("8.99", new CultureInfo("en-US"));
+            //decimal d2 = Decimal.Parse("8,99");
 
-            return "OK";
+            //return "OK";
 //            return GetFunctionEndpoint("fafeysong@gmail.com", "MusicStore.Models.ShoppingCart.GetTotal");
         }
 

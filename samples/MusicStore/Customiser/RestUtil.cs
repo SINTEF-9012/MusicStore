@@ -38,6 +38,7 @@ namespace MusicStore.Customiser
         public async Task<Manual> Post(string url, JObject body)
         {
             var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            
             var result = client.PostAsync(url, content).Result;
             string strResult = await result.Content.ReadAsStringAsync();
             System.Diagnostics.Debug.WriteLine(strResult);
