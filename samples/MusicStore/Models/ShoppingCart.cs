@@ -136,26 +136,15 @@ namespace MusicStore.Models
                 for (var i = 0; i <= 3; i++) {                    
                     if (manual == null)
                         break;
+                    manual.Evaluate(context);
                     if(manual.returnx != null)
                     {
                         string s = manual.returnx;
                         System.Diagnostics.Debug.WriteLine(s);
                         return Decimal.Parse(s, new CultureInfo("en-US"));
                     }
-                    if (manual.callback == null)
-                        break;
-
-                    JObject param = manual.callback.body;
-                    JObject body = new JObject();
-                    foreach (var x in param)
-                    {
-                        var query = x.Value.ToString();
-                        var items = MusicStore.Customiser.Interpreter.Evaluate(query, context);
-                        var token = JToken.FromObject(items);
-                        body.Add(x.Key, token);
-                    }
-
-                    manual = await RestUtil.instance.Post(endpoint + manual.callback.function, body);
+                    if (manual.nextcall != null)
+                        manual = await RestUtil.instance.Post(endpoint + manual.nextcall.function, manual.nextcall.resolvedbody);
                 }
             }
             

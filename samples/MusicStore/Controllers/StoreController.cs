@@ -101,37 +101,16 @@ namespace MusicStore.Controllers
                 {
                     if (manual == null)
                         break;
-                    if (manual.context != null)
-                    {
-                        foreach (var x in manual.context)
-                        {
-                            object value = null;
-                            var query = x.Value.ToString();
-                            if (x.Key.StartsWith("str_"))
-                                value = query;
-                            else
-                                value = JToken.FromObject(MusicStore.Customiser.Interpreter.Evaluate(query, context));
-                            if (!x.Key.StartsWith("_void"))
-                                context.Add(x.Key, value);
-                        }
-                    }
+                    manual.Evaluate(context);
                     if (manual.returnx != null)
                     {
                         if (manual.returnx == "View($album)")
                             return View((Album)context["album"]);
                     }
-                    if (manual.callback == null)
+                    if (manual.nextcall == null)
                         break;
 
-                    JObject param = manual.callback.body;
-                    JObject body = new JObject();
-                    foreach (var x in param)
-                    {
-                        var query = x.Value.ToString();
-                        body.Add(x.Key, JToken.FromObject(MusicStore.Customiser.Interpreter.Evaluate(query, context)));
-                    }
-
-                    manual = await RestUtil.instance.Post(endpoint + manual.callback.function, body);
+                    manual = await RestUtil.instance.Post(endpoint + manual.nextcall.function, manual.nextcall.resolvedbody);
                     
                 }
             }

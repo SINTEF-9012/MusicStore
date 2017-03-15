@@ -51,7 +51,7 @@ namespace MusicStore.Controllers
         public async Task<string> ForTest()
         {
             Manual m = await RestUtil.instance.Post("", new Newtonsoft.Json.Linq.JObject());
-            return m.callback.function;
+            return m.nextcall.function;
             
         }
 

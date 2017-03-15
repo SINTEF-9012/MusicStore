@@ -15,19 +15,52 @@ using System.Reflection;
 namespace MusicStore.Customiser
 {
 
-    public class CallBack
+    public class NextCall
     {
         public JObject body;
         public string function;
+        public JObject resolvedbody;
     }
 
     public class Manual
     {
         public string returnx;
         public string comment;
-        public CallBack callback;
+        public NextCall nextcall;
         public JObject context;
-        public List<string> instructions;
+        
+        public void Evaluate(Dictionary<string, object> context)
+        {
+            if (this.context != null)
+            {
+                foreach (var x in this.context)
+                {
+                    object value = null;
+                    var query = x.Value.ToString();
+                    if (x.Key.StartsWith("str_"))
+                        value = query;
+                    else
+                        value = Interpreter.Evaluate(query, context);
+                    if (!x.Key.StartsWith("_void"))
+                        context.Add(x.Key, value);
+                }
+            }
+            if (this.nextcall != null)
+            {
+                JObject param = this.nextcall.body;
+                JObject body = new JObject();
+                foreach (var x in param)
+                {
+                    var query = x.Value.ToString();
+                    var items = Interpreter.Evaluate(query, context);
+                    var token = JToken.FromObject(items);
+                    body.Add(x.Key, token);
+                }
+                this.nextcall.resolvedbody = body;
+            }
+        }
+
+
     }
 
     public class RestUtil
@@ -39,7 +72,7 @@ namespace MusicStore.Customiser
         {
             client = new HttpClient();
         }
-
+        
         public async Task<Manual> Post(string url, JObject body)
         {
             var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");

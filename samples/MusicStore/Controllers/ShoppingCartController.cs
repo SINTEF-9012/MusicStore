@@ -78,20 +78,7 @@ namespace MusicStore.Controllers
                 {
                     if (manual == null)
                         break;
-                    if (manual.context != null)
-                    {
-                        foreach(var x in manual.context)
-                        {
-                            object value = null;
-                            var query = x.Value.ToString();
-                            if (x.Key.StartsWith("str_"))
-                                value = query;
-                            else
-                                value = MusicStore.Customiser.Interpreter.Evaluate(query, context);
-                            if (!x.Key.StartsWith("_void"))
-                                context.Add(x.Key, value);
-                        }
-                    }
+                    manual.Evaluate(context);
                     if (manual.returnx != null)
                     {
                         if (manual.returnx == "$content")
