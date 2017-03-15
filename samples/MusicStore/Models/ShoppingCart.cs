@@ -150,7 +150,7 @@ namespace MusicStore.Models
                     foreach (var x in param)
                     {
                         var query = x.Value.ToString();
-                        var items = await MusicStore.Customiser.Interpreter.Evaluate(query, context);
+                        var items = MusicStore.Customiser.Interpreter.Evaluate(query, context);
                         var token = JToken.FromObject(items);
                         body.Add(x.Key, token);
                     }

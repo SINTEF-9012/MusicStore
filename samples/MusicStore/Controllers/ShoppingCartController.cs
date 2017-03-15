@@ -87,15 +87,9 @@ namespace MusicStore.Controllers
                             if (x.Key.StartsWith("str_"))
                                 value = query;
                             else
-                                value = await MusicStore.Customiser.Interpreter.Evaluate(query, context);
-                            context.Add(x.Key, value);
-                        }
-                    }
-                    if (manual.instructions != null) {
-                        foreach(var inst in manual.instructions)
-                        {
-                            if (inst == "$content.ContentType = \"text/html\"")
-                                ((ContentResult)context["content"]).ContentType = "text/html";
+                                value = MusicStore.Customiser.Interpreter.Evaluate(query, context);
+                            if (!x.Key.StartsWith("_void"))
+                                context.Add(x.Key, value);
                         }
                     }
                     if (manual.returnx != null)

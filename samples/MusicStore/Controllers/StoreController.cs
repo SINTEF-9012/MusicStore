@@ -109,15 +109,10 @@ namespace MusicStore.Controllers
                             var query = x.Value.ToString();
                             if (x.Key.StartsWith("str_"))
                                 value = query;
-                            context.Add(x.Key, value);
-                        }
-                    }
-                    if (manual.instructions != null)
-                    {
-                        foreach (var inst in manual.instructions)
-                        {
-                            if (inst == "$album.AlbumArtUrl = $str_url")
-                                ((Album)context["album"]).AlbumArtUrl = context["str_url"].ToString();
+                            else
+                                value = JToken.FromObject(MusicStore.Customiser.Interpreter.Evaluate(query, context));
+                            if (!x.Key.StartsWith("_void"))
+                                context.Add(x.Key, value);
                         }
                     }
                     if (manual.returnx != null)
@@ -133,7 +128,7 @@ namespace MusicStore.Controllers
                     foreach (var x in param)
                     {
                         var query = x.Value.ToString();
-                        body.Add(x.Key, JToken.FromObject(await MusicStore.Customiser.Interpreter.Evaluate(query, context)));
+                        body.Add(x.Key, JToken.FromObject(MusicStore.Customiser.Interpreter.Evaluate(query, context)));
                     }
 
                     manual = await RestUtil.instance.Post(endpoint + manual.callback.function, body);
@@ -142,7 +137,7 @@ namespace MusicStore.Controllers
             }
 
             /*=======End of custom code 'after' ==========*/
-
+            
             return View(album);
         }
     }
