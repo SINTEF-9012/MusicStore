@@ -1,3 +1,15 @@
+Customisable MusicStore
+============================================
+
+This is an experiment to make the MusicStore application customisable. Now the only methods that are modified to be customisable are as follows:
+
+- MusicStore.Models.ShoppingCart.GetTotal()
+- MusicStore.Controllers.ShoppingCartController.AddItems()
+- MusicStore.Controllers.StoreController.Details()
+
+Below are the original README from MusicStore
+
+
 MusicStore (Sample ASP.NET Core application)
 ============================================
 
