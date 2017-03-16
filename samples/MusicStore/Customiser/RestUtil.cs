@@ -29,7 +29,7 @@ namespace MusicStore.Customiser
         public NextCall nextcall;
         public JObject context;
         
-        public void Evaluate(Dictionary<string, object> context)
+        public void Operate(Dictionary<string, object> context)
         {
             if (this.context != null)
             {

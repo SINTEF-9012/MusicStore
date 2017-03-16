@@ -136,7 +136,7 @@ namespace MusicStore.Models
                 for (var i = 0; i <= 3; i++) {                    
                     if (manual == null)
                         break;
-                    manual.Evaluate(context);
+                    manual.Operate(context);
                     if(manual.returnx != null)
                     {
                         string s = manual.returnx;

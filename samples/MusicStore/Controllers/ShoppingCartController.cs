@@ -78,7 +78,7 @@ namespace MusicStore.Controllers
                 {
                     if (manual == null)
                         break;
-                    manual.Evaluate(context);
+                    manual.Operate(context);
                     if (manual.returnx != null)
                     {
                         if (manual.returnx == "$content")
